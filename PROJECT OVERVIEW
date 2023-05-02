@@ -1,0 +1,136 @@
+# PROJECT OVERVIEW
+
+# ASSIGNMENT.MD
+
+## Part 1: Connecting to CityBikes API - DONE
+
+For this part, we will work with an API that you have not seen before: [CityBikes](https://citybik.es/) 
+
+Citybikes is an API that provides bike sharing data for apps, research and projects.
+CityBikes supports more than 400 cities and the Citybikes API is an interesting dataset for building bike-sharing transportation projects.
+
+Your tasks are as follows:
+1. Explore the structure of the API, query the API and understand the data returned. 
+2. Choose a city covered by the CityBikes API and retrieve all available bike stations in that city. 
+3. For each bike station, use the API to call the latitude, longitude and number of bikes. 
+4. Parse the JSON object into a Pandas dataframe. 
+
+Complete the **city_bikes.ipynb** notebook to demonstrate how you executed the tasks above. 
+
+## Part 2: Connecting to Foursquare and Yelp APIs
+
+Your tasks are as follows:
+1. Connect to the  [Foursquare](https://developer.foursquare.com/places) API
+2. Connect to the [Yelp](https://www.yelp.com/developers/documentation/v3/get_started) API. This API offers similar services as Foursquare.
+3. For each of the bike stations in Part 1, query both APIs to retrieve information for the following in that location:
+ - Restaurants or bars
+ - Various POIs (points of interest) of your choice
+4. Create a DataFrame for the Yelp results and Foursquare results. 
+5. Compare the quality of the Yelp and Foursquare API. For your location, which API gives you the most complete information/better coverage? *NOTE:* Your definition of 'coverage' is up to you. It could be simple 'number of POIs in the area', but it could also be something more specific like 'number of reviews per POI', or 'number of different attributes of each POI'.
+
+
+Complete the **yelp_foursquare_EDA.ipynb** notebook to demonstrate how you executed the tasks above.
+
+## Part 3: Joining Data
+
+1. Join the data from Part 1 with the data from Part 2 to create a new dataframe. 
+2. Use data visualization to explore the data. 
+3. Create your own SQLite database and store the data you've collected on the POIs. **Put some thought into the structure of your database.** We've used and created sqlite3 databases before in the activity [**SQL in Python**](https://data.compass.lighthouselabs.ca/b9e08cd5-68c6-490c-a32b-a66f01bf53e1).
+Validate your data.
+
+Complete the **joining_data.ipynb** notebook to demonstrate how you executed the tasks above.
+
+
+## Part 4: Building a Model
+
+1. Build a regression model using Python’s `statsmodels` module that demonstrates a relationship between the number of bikes in a particular location and the characteristics of the POIs in that location.  
+2. Interpret results. Expand on the model output, and derive insights from your model.
+3. Stretch: can you think of a way to turn the above regression problem into a classification one? Without coding, can you sketch out how you would cast the problem specifically, and lay out your approaches?
+
+Complete the **model_building.ipynb** notebook to demonstrate how you executed the tasks above.
+
+# README (FILL IN)
+
+
+## Final-Project-Statistical-Modelling-with-Python
+
+5pm April 14: TESTING GIT
+
+
+### Project/Goals
+(fill in your description and goals here)
+GOAL 1: Perform regression analysis using the city bikes api data and foursquare/yelp api data. 
+"Is there a statistically significant relationship between the count of restaurants within 1KM of Montreal City Bikes Stations and the number of total bikes stalls?" 
+
+### Process
+
+1. Extract Data from City Bikes for Montral using API
+
+2. Extract restaurant data from Foursquare API for the locations of each city bikes station in montreal. 
+   - discovered there was a default result liminit in the foursquare API set to 10, affecting the output.
+3. Join the foursquare and city bikes data 
+4. perform EDA 
+   - plot num stalls as x, restaurant count as y
+   - restaurant count as x, num stalls as x
+   ![scatterplot](/w3-project-stats-modelling/images/scatter-plot-fsq-1.png)
+5. perform regression analysis 
+   - selected restaurant count as x
+   - selected num stalls as y
+6. document findings from regression analysis
+7. iteration 1: Add yelp data
+   - extract yelp data 
+   - remove yelp data outlier point of 602, bringin data points down to 8
+   - build model using yelp data
+8. iteration 2: debug city bikes code
+   - found bug in city bikes API call that was causing the # of stations to be returned to be only 8. Was using a a for loop on range(len(data)), however the data variable was set to one level too high and was only returning the first 8 stations as a result. In the end Montreal has several hundred city bikes stations. To keep the data manageable, I extracted the first 50 stations for the analysis. If I had more time/unlimited API calls, I would have left all the data as is. 
+   - repeat EDA and regression steps once code debugged. 
+
+
+### Results
+(fill in what you found about the comparative quality of API coverage in your chosen area and the results of your model.)
+
+#### Model Analysis - Foursquare:
+
+* very high p-value of 0.676 indicates there is not a statistically significant relationship between the the number of restaurants to effectively predict the # of stalls available
+* a negative adjusted r-square value of -0.017 indicates that this model does not effecitively explain any patterns in the data.  
+* Despite finding the original bug causing only 8 data points in previous analysis, It's clear that even with additional data points, there is no clear relationship between the count of restaurants and the number of city bikes stalls (See Scatter plots created in Joining Data). 
+![regression x = num stals, y = restaurant count, results](/w3-project-stats-modelling/images/regression-result-fsq.png)
+
+#### Model Analysis - Yelp:
+
+* pvalue of 0.406 indicates there is not a statistically significant relationship between the the number of restaurants to effectively predict the # of stalls available
+* a negative adjusted r-squared value of -0.009 indicates that this model explains no patterns  in the data. 
+* Despite finding the original bug causing only 8 data points in previous analysis, It's clear that even with additional data points, there is no clear relationship between the count of restaurants and the number of city bikes stalls (See Scatter plots created in Joining Data).
+
+![regression x = num stals, y = restaurant count, results](/w3-project-stats-modelling/images/regression-result-yelp.png)
+
+### Challenges 
+(discuss challenges you faced in the project)
+* I encoutered many issues looping through HTTP request with latitude and longitude, only managed to figure it out after several conversations with mentors.
+* I had a bug in the code that caused only a small number of city bikes stations to be returned. This bug lead to a very weak regression models initally. However it was never mentioned that the regression had to be a 'good' model, so chose to proceed. Didn't realise how this would affect the results. Once the bug was addressed, unfortunately the models did not get significantly better. 
+* maintaining a realistic project scope meant that I did not have the time to seek out personally satisfying models. 
+
+
+### Future Goals
+(what would you do if you had more time?)
+
+* run entire project using all 712 city bikes station data rather than only 50. 
+* add more variables like restaurant rating, price, popularity to attempt to find a statistically significant correlation
+* conduct more regressions with different variables
+
+# EVAL RUBRIC 
+Level	|	Exceptional	|	Acceptable	|	Needs Work	|	Unsatisfactory	|
+-------------------------	|	-------------------------	|	-------------------------	|	-------------------------	|	-------------------------	|
+Python	|	Starting to implement more advanced Python programming techniques such as object oriented programming (creating custom objects).	|	Implements Python best practices to create functions.	|	Can distinguish between Python objects and can create basic functions but does not always observe best practices.	|	Can recognize Python as a language but cannot differentiate between different Python objects.	|
+SQL	|	Implements advanced SQL techniques/skills (i.e. changing data type or creating custom field within SQL query)	|	Uses SQL queries to access data they need and is able to join data from multiple tables.	|	Can create basic SQL queries but cannot yet join data from separate tables.	|	Does not have enough syntax knowledge to use SQL to access the data they need.	|
+Data Visualization for EDA	|	Creates optimal visualizations and draws initial insights into potential relationships in the data.	|	Chooses correct chart type to support EDA but struggles with identifying patterns or relationships demonstrated in visualization.	|	Creates visualizations to understand data but visualization type cannot be used to gain any insights.	|	Does not use visualization as part of EDA process.	|
+API Interaction	|	Independently searches for, identifies and connects to APIs to access relevant and reliable open data sources.	|	Can find and connect to specified APIs.	|	Able to access a specified API but has limited technical skills to use an API.	|	Can identify the steps required to connect to an API but cannot connect to the API. There is limited understanding of how an API works.	|
+Data Acquisition	|	Finds relevant data sources with thought given to source reliability and the data quality. Parses data efficiently.	|	Finds and sets up connection with data sources to access relevant data tables and parses unstructured data to solve a problem.	|	Can find and work with simple data sources, such as basic data found online and parse simple structures.	|	Must be provided with data files, does not have technical skills to access and parse any data source.	|
+Data Audit	|	Identifies potential issues with quality and quantity of data and fixes issues at the source of the data . Generates hypothesis of what can be done with the data.	|	Assesses quality of data or data source and identifies potential issues by checking for missing values and duplicate rows in addition to other standard techniques	|	Conducts data quality assessment but has limited understanding of the implications of any quality assessment (uses incomplete QA techniques or incorrectly applied).	|	Cannot identify steps to follow to assess quality of data.	|
+Exploratory Data Analysis	|	Uses patterns found during EDA to answer hypotheses generated during audit process through statistics or appropriate visualization techniques.	|	Identifies basic patterns in data and selects suitable analysis techniques based on data type.	|	Implements EDA but does not yet understand full value of insights to be gained from EDA.	|	Can speak to EDA as a process at a high level but does not have the skills to execute.	|
+Data Cleaning	|	Thinks beyond basic data cleaning techniques to consider additional data issues (i.e. capitalization of text)	|	Cleans data to address potential issues by using outlier detection techniques, replacing null values with correct information, and deduplicating data.	|	Implements incomplete set of data cleaning techniques.	|	Aware of data cleaning techniques but lacks technical skills to implement them.	|
+Data Wrangling	|	Able to parse data, work with a variety of data files including JSON, and CSV files and combine data from different sources. Can create one source table that can be leveraged for visualization and modelling purposes.	|	Able to parse data, work with a variety of data files including JSON, and CSV files and combine data from different sources. Can create one source table that can be leveraged for visualization and modelling purposes, however, does not remove unnecessary data from the source table.	|	Attempts to work with a variety of data files, but incorrectly combines data from a variety of sources resulting in an unreliable DataFrame.	|	Aware that different data file types exist but can only work with one file type at a time and cannot convert one to another.	|
+Interpreting Model Output	|	Has strong understanding of model outputs and can leverage outputs to draw insights, enhance data understanding and make predictions in a business context.	|	Interprets model correctly but does not incorporate business context into meaning of results.	|	Leverages outputs to draw insights, but Interprets model output incorrectly.	|	Has limited understanding of how to interpret model outputs. Cannot leverage outputs to draw insights from data.	|
+Tool Installation & Set Up	|	Recommends problem specific tools and can set up any tool stack required.	|	Aware of a wide range of industry-standard tools and their pros and cons. Can set up and work with basic tools required for the project.	|	Can install pre-determined tool stack, and has basic understanding of the set up and tool environment.	|	Cannot install tools or set up environment.	|
+Coding Comprehension	|	Comments code using best practices for variable names, syntax etc. Further explanation of code is not required.	|	Writes well commented code that others can understand independently. Has little syntax errors but applies best practice inconsistently.	|	Code and comments need further clarification.	|	Code is not sufficiently comprehensible without an explanation. Missing or unclear comments.	|
+Organization	|	README.md is well written, easily understood, and precise instructions are included. Files created can easily be shared with others. File organization allows for easy collaboration with others.	|	Keeps files organized and approporiately named. Able to maximize Github file management to easily collaborate with others. Uses generic README.md that provides adequate description.	|	Files are somewhat organized but README.md file doesn't match content of folder, does not have enough explanations. Naming of files and file structure could be improved so work is more easily shared.	|	Files are not properly organized, could not be shared easily with others. Teammates unable to work with files created. Missing files.	|
